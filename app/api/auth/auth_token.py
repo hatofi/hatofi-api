@@ -12,8 +12,8 @@ reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
 def get_current_user(
-    db: Session = Depends(get_db),
-    token: str = Depends(reusable_oauth2),
+    db: Session = Depends(get_db), # Obtiene la sesión de base de datos
+    token: str = Depends(reusable_oauth2), # Obtiene el token de acceso del encabezado de autorización
 ) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
