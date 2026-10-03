@@ -1,0 +1,26 @@
+mi_proyecto/
+├── app/
+│   ├── __init__.py
+│   ├── main.py                  # Punto de entrada de la aplicación
+│   ├── core/                    # Configuración global, seguridad, DB connection
+│   │   ├── config.py
+│   │   └── database.py
+│   ├── api/                     # Agrupador de rutas HTTP
+│   │   ├── __init__.py
+│   │   └── v1/
+│   │       ├── api.py           # Incluye todos los routers de v1
+│   │       └── endpoints/
+│   │           ├── users.py
+│   │           └── items.py
+│   ├── schemas/                 # Pydantic models (DTOs)
+│   │   ├── user.py
+│   │   └── item.py
+│   ├── services/                # Lógica de negocio
+│   │   └── item_service.py
+│   └── models/                  # Entidades ORM (DB)
+│       └── item_model.py
+├── tests/                       # Pruebas unitarias e integración (pytest)
+├── .env                         # Variables de entorno
+├── .gitignore
+├── requirements.txt             # o pyproject.toml si usas Poetry/Ruff/Uv
+└── README.md
