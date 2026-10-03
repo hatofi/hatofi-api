@@ -1,7 +1,7 @@
 
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, Integer, String
+from sqlalchemy import ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.database import Base
 
@@ -14,6 +14,7 @@ class Farm(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(150), nullable=False) # nombre finca
+    description: Mapped[str] = mapped_column(Text, nullable=True) # descripción de la finca
     location: Mapped[str] = mapped_column(String(255), nullable=False) # ubicación geográfica de la finca (ej. Colombia, Antioquia, Remedios)
     capacity_head_count: Mapped[int] = mapped_column(nullable=False) # capacidad máxima de cabezas de ganado que la finca puede albergar
     capacity_current_head_count: Mapped[int] = mapped_column(nullable=False, default=0) # cantidad actual de cabezas de ganado en la finca

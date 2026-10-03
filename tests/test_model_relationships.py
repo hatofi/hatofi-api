@@ -1,9 +1,12 @@
+from datetime import datetime
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy.pool import StaticPool
 
 from app.core.database import Base
 from app.models.batcheModel import Batch
+from app.models.cattle import Cattle, CattleWeightLog
 from app.models.farmModel import Farm
 from app.models.investmentBatchModel import InvestmentBatch
 from app.models.userModel import Role, RoleEnum, User
@@ -59,12 +62,25 @@ def test_user_farm_batch_and_investment_relationships() -> None:
             InvestmentBatch(investor=investor_one),
             InvestmentBatch(investor=investor_two),
         ]
+        cattle = Cattle(
+            ear_tag_code="TAG-001",
+            breed="Brahman",
+            initial_weight_kg=350,
+            current_weight_kg=380,
+            purchase_price=2000,
+            batch=batch,
+        )
+        cattle.weight_logs = [
+            CattleWeightLog(weight_kg=350, notes="Initial weight"),
+            CattleWeightLog(weight_kg=380, notes="Current weight"),
+        ]
         db.add(batch)
         db.commit()
 
         db.refresh(farmer)
         db.refresh(investor_one)
         db.refresh(batch)
+        db.refresh(cattle)
         assert farmer.farms == [farm]
         assert farm.batches == [batch]
         assert {investment.investor for investment in batch.investments} == {
@@ -72,6 +88,8 @@ def test_user_farm_batch_and_investment_relationships() -> None:
             investor_two,
         }
         assert investor_one.investments[0].batch is batch
+        assert cattle.batch is batch
+        assert batch.cattle == [cattle]
+        assert len(cattle.weight_logs) == 2
 
     Base.metadata.drop_all(bind=engine)
-from datetime import datetime

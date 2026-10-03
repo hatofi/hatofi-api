@@ -8,6 +8,7 @@ from app.core.database import Base, SessionLocal, engine
 from app.models import userModel as _user_model
 from app.models import farmModel as _farm_model
 from app.models import batcheModel as _batch_model
+from app.models import cattle as _cattle_model
 from app.models import investmentBatchModel as _investment_batch_model
 from app.seed.seed_service import seed_roles
 
@@ -18,6 +19,8 @@ def _load_models() -> None:
         _user_model.User,
         _farm_model.Farm,
         _batch_model.Batch,
+        _cattle_model.Cattle,
+        _cattle_model.CattleWeightLog,
         _investment_batch_model.InvestmentBatch,
     )
 

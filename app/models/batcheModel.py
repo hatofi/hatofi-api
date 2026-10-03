@@ -8,6 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.database import Base
 
 if TYPE_CHECKING:
+    from app.models.cattle import Cattle
     from app.models.farmModel import Farm
     from app.models.investmentBatchModel import InvestmentBatch
 
@@ -61,4 +62,8 @@ class Batch(Base):
         back_populates="batch",
         cascade="all, delete-orphan",
     )
-    # cattle_items: Mapped[list["Cattle"]] = relationship("Cattle", back_populates="batch")
+    cattle: Mapped[list["Cattle"]] = relationship(
+        "Cattle",
+        back_populates="batch",
+        cascade="all, delete-orphan",
+    )
