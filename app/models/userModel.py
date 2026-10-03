@@ -1,18 +1,21 @@
 import enum
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import Boolean, DateTime, Enum as SQLEnum, ForeignKey, Integer, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.database import Base
 
+if TYPE_CHECKING:
+    from app.models.farmModel import Farm
+    from app.models.investmentBatchModel import InvestmentBatch
 
 # 1. Definimos el Enum para los roles disponibles
 class RoleEnum(str, enum.Enum):
-    ADMIN = "ADMIN"
-    DEVELOPER = "DEVELOPER"
-    INVESTOR = "INVESTOR"
-    FARMER = "FARMER"
+    ADMIN = "admin"
+    DEVELOPER = "develop"
+    INVESTOR = "user_investment"
+    FARMER = "user_farmer"
 
 
 # 2. Modelo ORM para la tabla 'roles'
@@ -37,3 +40,15 @@ class User(Base):
     created_at      : Mapped[datetime]  = mapped_column(DateTime(timezone=True), server_default=func.now())
     role_id         : Mapped[int]       = mapped_column(Integer, ForeignKey("roles.id"), nullable=False) # Clave Foránea (FK) apuntando a la tabla 'roles' (@ManyToOne)
     role            : Mapped["Role"]    = relationship("Role", back_populates="users") # Objeto de relación para acceder a las propiedades del Rol directamente en Python
+
+    # relaciones con otras tablas
+    farms: Mapped[list["Farm"]] = relationship(
+        "Farm",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+    investments: Mapped[list["InvestmentBatch"]] = relationship(
+        "InvestmentBatch",
+        back_populates="investor",
+        cascade="all, delete-orphan",
+    )

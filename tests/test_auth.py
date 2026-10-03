@@ -32,11 +32,9 @@ def override_get_db() -> Generator[Session, None, None]:
         db.close()
 
 
-app.dependency_overrides[get_db] = override_get_db
-
-
 @pytest.fixture()
 def client() -> Generator[TestClient, None, None]:
+    app.dependency_overrides[get_db] = override_get_db
     Base.metadata.create_all(bind=test_engine)
     with TestingSessionLocal() as db:
         db.add(Role(name=RoleEnum.FARMER, description="Test role"))
@@ -44,6 +42,7 @@ def client() -> Generator[TestClient, None, None]:
     with TestClient(app) as test_client:
         yield test_client
     Base.metadata.drop_all(bind=test_engine)
+    app.dependency_overrides.pop(get_db, None)
 
 
 def registration_payload() -> dict:
@@ -56,7 +55,7 @@ def registration_payload() -> dict:
     }
 
 
-def test_register_login_verify_and_logout(client: TestClient) -> None:
+def test_register_login_and_protected_endpoint(client: TestClient) -> None:
     register_response = client.post("/auth/register", json=registration_payload())
     assert register_response.status_code == 201
     assert register_response.json()["email"] == "ada@example.com"
@@ -72,10 +71,7 @@ def test_register_login_verify_and_logout(client: TestClient) -> None:
     token = login_data["access_token"]
 
     headers = {"Authorization": f"Bearer {token}"}
-    assert client.get("/auth/verify", headers=headers).status_code == 200
     assert client.get("/auth/me", headers=headers).json()["email"] == "ada@example.com"
-    assert client.post("/auth/logout", headers=headers).status_code == 204
-    assert client.get("/auth/verify", headers=headers).status_code == 401
 
 
 def test_registration_and_login_errors_are_reported(client: TestClient) -> None:

@@ -59,3 +59,5 @@ Desktop.ini
 *.swp
 *.swo
 *~
+
+/app/seed

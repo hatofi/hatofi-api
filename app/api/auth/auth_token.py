@@ -8,13 +8,7 @@ from app.core.security import ALGORITHM, SECRET_KEY
 from app.models.userModel import User
 from app.schemas.authSchema import TokenData
 
-
 reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="/auth/login")
-_revoked_tokens: set[str] = set()
-
-
-def revoke_token(token: str) -> None:
-    _revoked_tokens.add(token)
 
 
 def get_current_user(
@@ -26,9 +20,6 @@ def get_current_user(
         detail="No se pudo validar las credenciales.",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    if token in _revoked_tokens:
-        raise credentials_exception
-
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id = payload.get("sub")
