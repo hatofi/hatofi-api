@@ -35,12 +35,12 @@ class Batch(Base):
     target_amount: Mapped[float] = mapped_column(Numeric(18, 2), nullable=False)  # Meta de recaudación
     collected_amount: Mapped[float] = mapped_column(Numeric(18, 2), default=0.00) # Monto recaudado hasta el momento
     price_per_share: Mapped[float] = mapped_column(Numeric(18, 2), nullable=False) # Precio por acción o unidad de inversión (ej. 1 acción = $100)
-    estimated_roi_percentage: Mapped[float] = mapped_column(Numeric(5, 2), nullable=False)  # ej. 15.50%
+    estimated_roi_percentage: Mapped[float] = mapped_column(Numeric(5, 2), nullable=False, default=0.00)  # ej. 15.50%
 
     # Tiempos del Proyecto
     duration_months: Mapped[int] = mapped_column(nullable=False)  # ej. 15 o 18 meses
     funding_start_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False) # fecha de inicio de la campaña de inversión
-    funding_end_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False) # fecha de cierre de la campaña de inversión
+    funding_end_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True, default=None) # fecha de cierre de la campaña de inversión
     estimated_settlement_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True) # fecha estimada de liquidación de retornos a inversores (después de venta)
 
     # Estado y Datos Blockchain / DeFi

@@ -19,7 +19,7 @@ class Cattle(Base):
     breed: Mapped[str] = mapped_column(String(50), nullable=False) # raza del ganado (ej. Angus, Brahman, Holstein)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True) # descripción adicional del ganado (ej. características, historial de salud, etc.)
     initial_weight_kg: Mapped[float] = mapped_column(Numeric(6, 2), nullable=False) # peso inicial del ganado en kilogramos al momento de la compra
-    current_weight_kg: Mapped[float] = mapped_column(Numeric(6, 2), nullable=False) # peso actual del ganado en kilogramos, se actualizará con cada registro de peso
+    current_weight_kg: Mapped[float] = mapped_column(Numeric(6, 2), nullable=False, default=0.00) # peso actual del ganado en kilogramos, se actualizará con cada registro de peso
     purchase_price: Mapped[float] = mapped_column(Numeric(18, 2), nullable=False) # precio de compra del ganado en la moneda local o en la criptomoneda utilizada para la inversión
     sale_price: Mapped[Optional[float]] = mapped_column(Numeric(18, 2), nullable=True) # precio de venta del ganado en la moneda local o en la criptomoneda utilizada para la inversión, se registrará al momento de la venta
     batch_id: Mapped[int] = mapped_column(
