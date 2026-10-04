@@ -5,12 +5,13 @@ from fastapi import FastAPI
 from app.api.auth.auth_router import router as user_router
 from app.api.farm.farm_router import router as farm_router
 from app.api.batch.batch_router import router as batch_router
+from app.api.cattle.cattle_router import router as cattle_router
 from app.core.config import ENVIRONMENT
 from app.core.database import Base, SessionLocal, engine
 from app.models import userModel as _user_model
 from app.models import farmModel as _farm_model
 from app.models import batchModel as _batch_model
-from app.models import cattle as _cattle_model
+from app.models import cattleModel as _cattle_model
 from app.models import investmentBatchModel as _investment_batch_model
 from app.seed.seed_service import seed_roles
 
@@ -48,3 +49,4 @@ app = FastAPI(
 app.include_router(user_router)
 app.include_router(farm_router)
 app.include_router(batch_router)
+app.include_router(cattle_router)
