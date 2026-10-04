@@ -3,7 +3,7 @@ from uuid import uuid4
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.models.batcheModel import Batch, BatchStatusEnum
+from app.models.batchModel import Batch, BatchStatusEnum
 from app.models.farmModel import Farm
 from app.models.userModel import RoleEnum, User
 from app.schemas.batchSchema import BatchCreate, BatchStatusUpdate, BatchUpdate
@@ -15,7 +15,8 @@ ALLOWED_STATUS_TRANSITIONS: dict[BatchStatusEnum, set[BatchStatusEnum]] = {
         BatchStatusEnum.CANCELLED,
     },
     BatchStatusEnum.FUNDING: {BatchStatusEnum.FUNDED},
-    BatchStatusEnum.FUNDED: {BatchStatusEnum.IN_PROGRESS},
+    BatchStatusEnum.FUNDED: {BatchStatusEnum.BUYING_PROCESS},
+    BatchStatusEnum.BUYING_PROCESS: {BatchStatusEnum.IN_PROGRESS},
     BatchStatusEnum.IN_PROGRESS: {BatchStatusEnum.READY_FOR_SALE},
     BatchStatusEnum.READY_FOR_SALE: {BatchStatusEnum.CLOSED},
     BatchStatusEnum.CLOSED: set(),

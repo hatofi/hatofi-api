@@ -7,7 +7,7 @@ from app.core.database import Base
 
 
 if TYPE_CHECKING:
-    from app.models.batcheModel import Batch
+    from app.models.batchModel import Batch
     from app.models.userModel import User
 
 

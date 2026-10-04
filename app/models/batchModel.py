@@ -17,6 +17,7 @@ class BatchStatusEnum(str, enum.Enum):
     DRAFT = "DRAFT"               # En borrador / configuración
     FUNDING = "FUNDING"           # Abierto a inversión DeFi
     FUNDED = "FUNDED"             # Meta alcanzada, listo para compra
+    BUYING_PROCESS = "BUYING_PROCESS" # Proceso de compra del ganado (1-2 meses)
     IN_PROGRESS = "IN_PROGRESS"   # Ganado comprado y entregado al ganadero (15-18 meses)
     READY_FOR_SALE = "READY_FOR_SALE"  # Período cumplido, listo para comercializar
     CLOSED = "CLOSED"             # Ganado vendido y retornos liquidados a inversores

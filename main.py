@@ -9,7 +9,7 @@ from app.core.config import ENVIRONMENT
 from app.core.database import Base, SessionLocal, engine
 from app.models import userModel as _user_model
 from app.models import farmModel as _farm_model
-from app.models import batcheModel as _batch_model
+from app.models import batchModel as _batch_model
 from app.models import cattle as _cattle_model
 from app.models import investmentBatchModel as _investment_batch_model
 from app.seed.seed_service import seed_roles
@@ -33,9 +33,9 @@ _load_models()
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     Base.metadata.create_all(bind=engine)
-    if ENVIRONMENT == "development":
-        with SessionLocal() as db:
-            seed_roles(db)
+    # if ENVIRONMENT == "development":
+    #     with SessionLocal() as db:
+    #         seed_roles(db)
     yield
 
 

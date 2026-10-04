@@ -1,7 +1,7 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.models.batcheModel import Batch, BatchStatusEnum
+from app.models.batchModel import Batch, BatchStatusEnum
 from app.models.farmModel import Farm
 from app.models.userModel import RoleEnum, User
 from app.schemas.farmSchema import (

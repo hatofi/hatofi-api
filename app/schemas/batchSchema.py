@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.models.batcheModel import BatchStatusEnum
+from app.models.batchModel import BatchStatusEnum
 
 
 class BatchCreate(BaseModel):

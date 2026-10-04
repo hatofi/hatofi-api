@@ -5,8 +5,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy.pool import StaticPool
 
 from app.core.database import Base
-from app.models.batcheModel import Batch
-from app.models.cattle import Cattle, CattleWeightLog
+from app.models.batchModel import Batch
+from app.models.cattleModel import Cattle, CattleWeightLog
 from app.models.farmModel import Farm
 from app.models.investmentBatchModel import InvestmentBatch
 from app.models.userModel import Role, RoleEnum, User

@@ -9,7 +9,7 @@ from sqlalchemy.pool import StaticPool
 
 from app.core.database import Base, get_db
 from app.core.security import create_access_token
-from app.models.batcheModel import Batch, BatchStatusEnum
+from app.models.batchModel import Batch, BatchStatusEnum
 from app.models.userModel import Role, RoleEnum, User
 from main import app
 
