@@ -51,10 +51,10 @@ class Batch(Base):
         nullable=False
     )
     smart_contract_address: Mapped[Optional[str]] = mapped_column(String(255), nullable=True) # dirección del contrato inteligente en la blockchain (si aplica)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     # Llaves Foráneas
     farm_id: Mapped[int] = mapped_column(Integer, ForeignKey("farms.id"), nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     # Relaciones
     farm: Mapped["Farm"] = relationship("Farm", back_populates="batches")

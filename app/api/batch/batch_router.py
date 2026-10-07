@@ -5,6 +5,7 @@ from app.api.auth.auth_token import get_current_user
 from app.api.batch.batch_services import BatchService
 from app.core.database import get_db
 from app.models.userModel import User
+from app.models.batchModel import BatchStatusEnum
 from app.schemas.batchSchema import (
     BatchCreate,
     BatchResponse,
@@ -14,6 +15,20 @@ from app.schemas.batchSchema import (
 
 router = APIRouter(prefix="/batches", tags=["Batches"])
 
+
+@router.get("/open", response_model=list[BatchResponse])
+def list_open_batches(
+    db: Session = Depends(get_db),
+    _: User = Depends(get_current_user),
+) -> list[BatchResponse]:
+    return BatchService.list_by_status(db, BatchStatusEnum.FUNDING)
+
+@router.get("/closed", response_model=list[BatchResponse])
+def list_closed_batches(
+    db: Session = Depends(get_db),
+    _: User = Depends(get_current_user),
+) -> list[BatchResponse]:
+    return BatchService.list_by_status(db, BatchStatusEnum.CLOSED)
 
 @router.post("", response_model=BatchResponse, status_code=201)
 def create_batch(

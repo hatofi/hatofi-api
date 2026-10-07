@@ -59,8 +59,8 @@ def test_user_farm_batch_and_investment_relationships() -> None:
             farm=farm,
         )
         batch.investments = [
-            InvestmentBatch(investor=investor_one),
-            InvestmentBatch(investor=investor_two),
+            InvestmentBatch(investor=investor_one, amount=500),
+            InvestmentBatch(investor=investor_two, amount=500),
         ]
         cattle = Cattle(
             ear_tag_code="TAG-001",

@@ -132,3 +132,14 @@ class BatchService:
         db.commit()
         db.refresh(batch)
         return batch
+
+    @staticmethod
+    def list_by_status(
+        db: Session, batch_status: BatchStatusEnum
+    ) -> list[Batch]:
+        return (
+            db.query(Batch)
+            .filter(Batch.status == batch_status)
+            .order_by(Batch.created_at.desc())
+            .all()
+        )

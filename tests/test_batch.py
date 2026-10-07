@@ -8,6 +8,7 @@ from sqlalchemy.pool import StaticPool
 from app.core.database import Base, get_db
 from app.core.security import create_access_token
 from app.models.farmModel import Farm
+from app.models.batchModel import Batch, BatchStatusEnum
 from app.models.userModel import Role, RoleEnum, User
 from main import app
 
@@ -113,7 +114,14 @@ def test_owner_can_create_edit_and_change_batch_status(
     assert update.status_code == 200
     assert update.json()["description"] == "Descripción actualizada"
 
-    for next_status in ("FUNDING", "FUNDED", "IN_PROGRESS", "READY_FOR_SALE", "CLOSED"):
+    for next_status in (
+        "FUNDING",
+        "FUNDED",
+        "BUYING_PROCESS",
+        "IN_PROGRESS",
+        "READY_FOR_SALE",
+        "CLOSED",
+    ):
         status_response = client.patch(
             f"/batches/{batch_id}/status",
             json={"status": next_status},
@@ -177,3 +185,108 @@ def test_status_transitions_reject_invalid_jumps_and_allow_cancel(
         headers=auth_headers(2),
     )
     assert terminal_jump.status_code == 409
+
+
+def test_investor_can_invest_increase_and_query_summary(
+    client: TestClient,
+) -> None:
+    created = client.post(
+        "/batches", json=batch_payload(), headers=auth_headers(2)
+    )
+    batch_id = created.json()["id"]
+    with TestingSessionLocal() as db:
+        batch = db.query(Batch).filter(Batch.id == batch_id).one()
+        batch.status = BatchStatusEnum.FUNDING
+        db.commit()
+
+    investment = client.post(
+        "/investments",
+        json={"batch_id": batch_id, "amount": "6000.00"},
+        headers=auth_headers(3),
+    )
+    assert investment.status_code == 201
+    assert investment.json()["amount"] == "6000.00"
+    assert investment.json()["batch_status"] == "FUNDING"
+
+    increased = client.patch(
+        f"/investments/{batch_id}/amount",
+        json={"amount": "2000.00"},
+        headers=auth_headers(3),
+    )
+    assert increased.status_code == 200
+    assert increased.json()["amount"] == "8000.00"
+
+    listed = client.get("/investments/me", headers=auth_headers(3))
+    assert listed.status_code == 200
+    assert len(listed.json()) == 1
+
+    summary = client.get("/investments/me/summary", headers=auth_headers(3))
+    assert summary.status_code == 200
+    assert summary.json()["open_investments"] == 1
+    assert summary.json()["open_amount"] == "8000.00"
+
+
+def test_investment_rejects_duplicate_and_amount_above_remaining(
+    client: TestClient,
+) -> None:
+    created = client.post(
+        "/batches", json=batch_payload(), headers=auth_headers(2)
+    )
+    batch_id = created.json()["id"]
+    with TestingSessionLocal() as db:
+        batch = db.query(Batch).filter(Batch.id == batch_id).one()
+        batch.status = BatchStatusEnum.FUNDING
+        db.commit()
+
+    first = client.post(
+        "/investments",
+        json={"batch_id": batch_id, "amount": "10000.01"},
+        headers=auth_headers(3),
+    )
+    assert first.status_code == 400
+
+    valid = client.post(
+        "/investments",
+        json={"batch_id": batch_id, "amount": "10000.00"},
+        headers=auth_headers(3),
+    )
+    assert valid.status_code == 201
+
+    duplicate = client.post(
+        "/investments",
+        json={"batch_id": batch_id, "amount": "1.00"},
+        headers=auth_headers(3),
+    )
+    assert duplicate.status_code == 409
+
+
+def test_closed_batch_is_listed_and_investment_summary_is_closed(
+    client: TestClient,
+) -> None:
+    created = client.post(
+        "/batches", json=batch_payload(), headers=auth_headers(2)
+    )
+    batch_id = created.json()["id"]
+    with TestingSessionLocal() as db:
+        batch = db.query(Batch).filter(Batch.id == batch_id).one()
+        batch.status = BatchStatusEnum.FUNDING
+        db.commit()
+
+    assert client.post(
+        "/investments",
+        json={"batch_id": batch_id, "amount": "1000.00"},
+        headers=auth_headers(3),
+    ).status_code == 201
+
+    with TestingSessionLocal() as db:
+        batch = db.query(Batch).filter(Batch.id == batch_id).one()
+        batch.status = BatchStatusEnum.CLOSED
+        db.commit()
+
+    closed = client.get("/batches/closed", headers=auth_headers(3))
+    assert closed.status_code == 200
+    assert any(item["id"] == batch_id for item in closed.json())
+
+    summary = client.get("/investments/me/summary", headers=auth_headers(3))
+    assert summary.json()["closed_investments"] == 1
+    assert summary.json()["closed_amount"] == "1000.00"
